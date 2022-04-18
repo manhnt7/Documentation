@@ -23,14 +23,17 @@ những thay đổi được thực hiện đối với cách hiển thị hình
 
 Responsibility là gì?
 Trong ngữ cảnh SRP, chúng ta định nghĩa thêm một responsibility là chúng ta đã thêm “một lý do để thay đổi”. Nếu bạn suy nghĩ sẽ thay đổi một lớp, sau đó lớp đó có hơn nhiều responsibility. Điều này đôi khi khó thể nhận ra. Chúng ta đã quen việc nhóm các responsibility. Ví dụ, với interface Modem. Hầu hết chúng ta sẽ đồng ý rằng giao diện này trông hoàn toàn hợp lý. Bốn hàm mà nó khai báo chắc chắn là các hàm thuộc về một modem.
+
 *Listing 8-1*
 ***Modem.java -- SRP Violation***
-`{
+```java
+{
  public void dial(String pno);
  public void hangup();
  public void send(char c);
  public char recv();
-}`
+}```
+
 
 Tuy nhiên, ở đây có tới 2 responsibilities tồn tại. Đó là quản lý về kết nối và giao tiếp dữ liệu. dial và hangup là 2 hàm có nhiệm vụ kết nối với modem, trong khi send và recv là 2 hàm có chức năng thực hiện giao tiếp dữ liệu.
 

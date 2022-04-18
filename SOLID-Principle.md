@@ -32,7 +32,7 @@ Trong ngữ cảnh SRP, chúng ta định nghĩa thêm một responsibility là 
  public void hangup();
  public void send(char c);
  public char recv();
-}```
+}`
 
 
 Tuy nhiên, ở đây có tới 2 responsibilities tồn tại. Đó là quản lý về kết nối và giao tiếp dữ liệu. dial và hangup là 2 hàm có nhiệm vụ kết nối với modem, trong khi send và recv là 2 hàm có chức năng thực hiện giao tiếp dữ liệu.

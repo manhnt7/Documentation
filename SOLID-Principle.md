@@ -26,7 +26,8 @@ Trong ngữ cảnh SRP, chúng ta định nghĩa thêm một responsibility là 
 
 *Listing 8-1*
 ***Modem.java -- SRP Violation***
-```java{
+```java
+{
  public void dial(String pno);
  public void hangup();
  public void send(char c);

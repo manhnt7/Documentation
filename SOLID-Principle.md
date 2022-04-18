@@ -1,6 +1,7 @@
 # 1. SRP: The Single-Responsibility Principle
 
 ![markdown](https://github.com/manhnt7/Documentation/blob/main/image/SRP-image.png)
+
 Hãy xem xét trò chơi bowling từ Chương 6. Đối với hầu hết quá trình phát triển của nó, lớp Game đã xử lý 2 nhiệm vụ riêng biệt. Theo dõi khung hình hiện tại và tính toán điểm số. Cuối cùng, RCM và RSK đã tách hai nhiệm vụ này thành hai lớp. Gồm có class Game và Scorer, Game thực hiện theo dõi các chỉ số, Scorer có nhiệm vụ tính toán điểm số.
 
 Tại sao phải tách hai nhiệm vụ này thành các lớp riêng biệt là một điều quan trọng nên làm? Bởi vì mỗi nhiệm vụ là một trục của sự thay đổi. Khi yêu cầu được thay đổi, sự thay đổi ấy sẽ tác động lên nhiệm vụ của từng lớp. 
@@ -55,6 +56,8 @@ Tóm lại
 SRP là một trong những nguyên tắc đơn giản nhất và là một trong những nguyên tắc khó thực hiện đúng. Các responsibility liên đới là một cái gì đó mà chúng tôi làm một cách tự nhiên. Tìm kiếm và tách biệt những responsibility đó với nhau là chiếm phần lớn của việc thiết kế phần mềm. 
 Chúng ta mới chỉ áp dụng một quy tắc đầu tiên của SOLID – quy tắc đơn nhiệm – vào thiết kế phần mềm thì code đã trở nên trong sáng và hữu dụng hơn rất nhiều. Có thể dễ dàng hình dung được, nếu các anh em developer chúng ta đều nắm vững và áp dụng các quy tắc này, thì phần mềm của chúng ta sẽ tốt lên rất nhiều.
 Phần còn lại của các nguyên tắc chúng ta sẽ thảo luận quay lại vấn đề này theo cách này hay cách khác. 
+
+![markdown](https://github.com/manhnt7/Documentation/blob/main/image/OCP-image.png)
 
 # 2. OCP: The Open–Closed Principle
 

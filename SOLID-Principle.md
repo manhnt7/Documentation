@@ -57,7 +57,7 @@ SRP là một trong những nguyên tắc đơn giản nhất và là một tron
 Chúng ta mới chỉ áp dụng một quy tắc đầu tiên của SOLID – quy tắc đơn nhiệm – vào thiết kế phần mềm thì code đã trở nên trong sáng và hữu dụng hơn rất nhiều. Có thể dễ dàng hình dung được, nếu các anh em developer chúng ta đều nắm vững và áp dụng các quy tắc này, thì phần mềm của chúng ta sẽ tốt lên rất nhiều.
 Phần còn lại của các nguyên tắc chúng ta sẽ thảo luận quay lại vấn đề này theo cách này hay cách khác. 
 
-![markdown](https://github.com/manhnt7/Documentation/blob/main/image/OCP-image.png)
+![markdown](https://github.com/manhnt7/Documentation/blob/main/image/OCP-Image.png)
 
 # 2. OCP: The Open–Closed Principle
 

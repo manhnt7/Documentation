@@ -237,3 +237,168 @@ Lời giải này thỏa mãn OCP. Nó có thể thay đổi bằng cách thêm 
 
 Ví dụ trên là một ví dụ hoàn toàn có trật tự. Hãy xem xét điều gì xảy ra với `DrawAllShapes` nếu chúng ta quyết định tất cả các hình tròn cần được vẽ trước hình vuông. Hàm `DrawAllShapes` không thể đóng với những thay đổi như vậy. Để thực hiện thay đổi đó, bạn cần phải vào trong hàm `DrawAllShapes`, kiểm tra tất cả hình tròn, rồi mới đến hình vuông.
 
+**Dự đoán và kiến trúc "tự nhiên"**
+
+Liệu chúng ta đã dự đoán được kiểu thay đổi này và đưa ra một lớp trừu tượng bảo vệ chúng ta khỏi nó. Cách trừu tượng hóa đưa ra ở đoạn code trên chỉ làm chương ngại cho chúng ta với loại thay đổi này, hơn là một sự giúp đỡ. Bạn có thể bất ngờ. Nhưng cuối cùng, điều gì có thể tự nhiên hơn một lớp Shape làm cơ sở để Square và Circle sinh ra? Tại sao mô hình tự nhiên này lại không phải mô hình tốt nhất? Đáp án rõ ràng là mô hình sẽ KHÔNG tự nhiên trong hệ thống mà thứ tự quan trọng hơn kiểu hình dạng.
+
+Nó đưa chúng ta đến một kết luận phiền phức. Một cách tổng quá, không cần biết module của bạn "đóng" như thế nào, sẽ luôn có một loại thay đổi biến nó thành không đóng. Không có mô hình nào tự nhiên trong mọi hoàn cảnh!
+
+Bởi tính đóng không thể hoàn thiện được, nó cần được xử lý một cách chiến lược. Có nghĩa là, người thiết kế cần lựa chọn loại thay đổi so với cái có thể đóng thiết kế của họ. Anh ta cần dự đoàn hầu hết các thay đổi có thể xảy ra, và sau đó xây dựng kiến trúc trừu tượng để bảo vệ mình khỏi thay đổi đó.
+
+Điều này cần nhiều kinh nghiệm của người thiết kế. Người thiết kế có kinh nghiệm hy vọng anh ta biết được người dùng và môi trường kinh doanh đủ để có thể dự đoán các loại thay đổi đến hệ thống. Sau đó, anh ta sử dụng OCP để đáp ứng thay đổi có tần suất cao nhất.
+
+Đây không phải là điều đơn giản. Khi lập trình viên đoán đúng, họ thắng. Khi họ đoán sai, họ thua. Và họ thường đoán sai hầu hết các trường hợp.
+
+Thêm vào đó, đáp ứng được OCP rất tốn kém. Nó tiêu tốn nhiều thời gian phát triển và nỗ lực để tạo ra một kiến trúc hợp lý. Tính trừu tượng cũng làm tăng lên độ phức tạp của ứng dụng. Có một lượng giới hạn sự trừu tượng mà lập trình viên có thể đáp ứng được. Rõ ràng, chúng ta cần giới hạn OCP cho một những thay đổi hay xảy ra nhất.
+
+Làm cách nào chúng ta biết được thay đổi nào dễ xảy ra? Chúng ta cần nghiên cứu hợp lý, hỏi câu hỏi hợp lý, và dùng kinh nghiệm của mình cũng như những kiến thức chung. Và cuối cùng, ***chúng ta đợi đến khi thay đổi diễn ra!***
+
+**Cho "lưỡi câu" vào trong**
+
+Làm cách nào chúng ta bảo vệ mình trước những thay đổi? Ở thế kỷ trước, chúng tôi có một câu nói. Chúng ta nên "cho lười câu vào trong" cho thay đổi mà chúng ta nghĩ là nó có thể xảy ra. Chúng tôi nghĩ rằng điều đó có thể giúp phần mềm trở nên mềm dẻo.
+
+Tuy nhiên, lưỡi câu chúng tôi cho vào thường sai lầm. Sai lầm hơn nữa, nó lại có dấu hiệu của sự phức tạp không cần thiết (Needless Complexity) cần được hộ trợ vào bảo trì, kể cả khi chúng không được dùng đến. Đó không phải là một điều tốt. Chúng ta không muốn sử dụng một thiết kế có quá nhiều lớp trừu tượng. Thay vào đó, chúng ta thường đợi cho đến khi chúng ta thực sự cần trừu tượng hóa, rồi mới phát triển nó.
+
+**Lừa tôi một lần...**
+
+Có một câu nói từ xa xưa: "Lừa tôi một lần, bạn xấu hổ. Lừa gạt tôi hai lần, tôi xấu hổ." Đây là một thái độ mạnh mẽ trong thiết kế phần mềm. Để ứng dụng của chúng ta thoát khỏi sự phức tạp không cần thiết (Needless Complexity), chúng ta có thể cho phép bản thân lừa mình một lần. Có nghĩa là chúng ta viết code và hy vọng sẽ không có thay đổi. Khi thay đổi xảy ra, chúng ta xây dựng lớp trừu tượng để bảo vệ mình khỏi những thay đổi trong tương lai có dạng đó. Nói ngắn gọn, chúng ta tóm viên đạn đầu tiên, và chắc chắn rằng mình sẽ được bảo vệ từ bất cứ viên đạn nào bắn ra từ cùng khẩu súng đó.
+
+**Mô phỏng thay đổi**
+
+Nếu chúng ta quyết định tóm viên đạn đầu tiên, chúng ta có lợi thế biết được hướng bay của viên đạn sớm hơn. Chúng ta biết được loại thay đổi có thể diễn ra trước khi chúng ta đi quá xa trong lộ trình phát triển. Chúng ta càng đợi lâu để thấy được thay đổi đó, chúng ta càng khó để tạo ra một lớp trừu tượng hợp lý.
+
+Do vậy, chúng ta cần mô phỏng thay đổi. Chúng ta làm điều đó thông qua hàng loạt cuộc thỏa luận đưa ra ở chương 2.
+
+* Chúng ta viết kịch bản kiểm thử trước. Kiểm thử là một loại hình sử dụng hệ thống. Bằng cách viết kiểm thử trước, chúng ta buộc hệ thống trở nên có thể kiểm thử được (testable). Do vậy, thay đổi trong một hệ thống có thể kiểm thử sẽ không làm chúng ta quá bất ngờ sau đó. Chúng ta sẽ phải xây dựng lớp trừu tượng có thể kiểm thử được. Chúng ta sẽ thấy rằng rất nhiều trong số các lớp trừu tượng đó giúp ích chúng ta khi các thay đổi sau này diễn ra.
+
+* Chúng ta phát triển trên càng vòng đời ngắn. Vài ngày thay vì vài tuần.
+
+* Chúng ta phát triển các chức năng trước cơ sở hạ tầng, và thường xuyên cho các bên liên quan thấy các chức năng đã làm được.
+
+* Chúng ta phát triển các chức năng quan trọng nhất trước.
+
+* Chúng ta phân phối phần mềm nhanh và thường xuyên. Chúng ta đưa nó đến với khách hàng và người dùng nhanh chóng và thường xuyên nhất có thể.
+
+**Sử dụng sự trừu tượng để đạt được tính đóng một cách minh bạch**
+
+OK, vậy chúng ta đã tóm được viên đạn đầu tiên. Người dùng muốn vẽ hình tròn trước hình vuông. Giờ chúng ta phải bảo vệ bản thân khỏi những thay đổi có dạng này trong tương lai.
+
+Làm cách nào để chúng ta đóng được hàm `DrawAllShapes` trước các thay đổi về thứ tự vẽ? Nhớ rằng tính đóng phụ thuộc vào sự trừu tượng. Do vậy, để đóng được hàm `DrawAllShapes` trước sự thay đổi, chúng ta cần sự trừu tượng về thứ tự. Loại trừu tượng này cung cấp một lớp có thể mô tả được thứ tự vẽ.
+
+Mỗi quy tắc sắp xếp sẽ gồm hai đối tượng, để có thể xác định đối tượng nào được vẽ trước. Chúng ta có thể định nghĩa phương thức trừu tượng cho `Shape` tên là `Precedes`. Hàm này nhận một hình khác làm tham số và trả về giá trị luận lý (boolean). Kết quả là đúng (true) nếu đối tượng Shape nhận được thông báo cần được vẽ trước khi đối tượng `Shape` được truyền vào dưới dạng tham số.
+
+Trong C++, phương thức có dạng này được biểu thị dưới dạng `operator<`. Đoạn code sau đây mô tả class `Shape` sẽ như thế nào khi có thêm phương thức sắp xếp.
+
+```C++
+// Shape with ordering method
+class Shape
+{
+  public:
+	virtual void Draw() const = 0;
+	virtual bool Precedes(const Shape&) const = 0;
+
+	bool operator<(const Shape& s) {return Precedes(s);}
+}
+```
+Đến đây, chúng ta có thể xác định quan hệ sắp xếp giữa hai đối tượng `Shape`. Chúng ta có thể sắp xếp chúng rồi mới vẽ. Đoạn code sau viết bằng C++ sẽ thực hiện công việc đó.
+
+```C++
+// DrawAllShapes with Ordering
+template <typename P>
+class Lessp // utility for sorting container or pointers
+{
+  public:
+    bool operator()(const P p, const P q) {return (*p) < (*q);}
+}
+
+void DrawAllShapes(vector<Shape*>& list)
+{
+  vector<Shape*> orderedList = list;
+  sort(orderedList.begin(),
+       orderedList.end(),
+	   Lessp<Shape*>*());
+
+  vector<Shape*>::const_iterator i;
+  for (i=orderedList.begin(); i < orderedList.end(); i++)
+	(*i)->Draw();
+}
+```
+Bây giờ chúng ta có thể vẽ hình và vẽ theo thứ tự định sẵn. Tuy nhiên có vẻ chúng ta chưa có giải pháp cho việc vẽ theo thứ tự giảm dần mà bài toán yêu cầu. Do vậy, chúng ta cần sửa hàm `Precedes` của class `Shape` trong các lớp con để chỉ định thứ tự sắp xếp. Làm cách nào để thự hiện điều đó? Dòng code nào nên ghi ở `Circle::Precedes` để đảm bảo hình tròn sẽ được vẽ trước hình vuông? Xem xét đoạn code sau.
+
+```C++
+// Ordering a Circle
+bool Circle::Precedes(const Shape& s) const
+{
+  if (dynamic_cast<Square*>(s))
+    return true;
+  else
+    return false;
+}
+```
+Rõ ràng ở phương thức trên, cũng như những người anh em của nó cùng sinh ra từ Shape, không thỏa mãn OCP. Không có cách nào để đóng chúng trước những lớp con mới của Shape. Mỗi khi có một lớp con được sinh ra, tất cả các hàm Precedes cần thay đổi.
+
+Tất nhiên sẽ chẳng có vấn đề gì nếu không có thêm lớp con nào sinh ra từ Shape. Ngược lại, nếu chúng được tạo ra thường xuyên, thiết kế sẽ phải thay đổi rất nhiều. Vậy, một lần nữa, chúng ta lại bắt được viên đạn.
+
+**Sử dụng cách tiếp cận định hướng từ dữ liệu để đạt được tính đóng**
+
+Nếu chúng ta muốn đóng các con của Shape để chúng không cần biết các con khác, chúng ta có thể tiếp cận từ dữ liệu. Dưới đây là một giải pháp.
+
+```C++
+// Cơ chế quản lý sắp xếp sử dụng bảng
+#include <typeinfo>
+#include <string>
+#include <iostream>
+
+using namespace std;
+
+class Shape
+{
+  public:
+    virtual void Draw() const = 0;
+	bool Precedes(const Shape&) const;
+	bool operator<(const Shape& s) const {return Precedes(s);}
+	static void const char* typeOrderTable[];
+};
+
+const char * Shape::typeOrderTable[] =
+{
+  typeid(Circle).name(),
+  typeid(Square).name(),
+
+};
+
+// Hàm sau tìm kiếm bảng theo tên class.
+// Bảng định nghĩa thứ tự mà các hình được vẽ.
+// Hình không tìm được luôn được sắp xếp trước hình tìm được.
+bool Shape::Precedes(const Shape& s) const
+{
+  const char* thisType = typeid(*this).name();
+  const char* argType = typeid(s).name();
+  bool done = false;
+  int thisOrd = -1;
+  int argOrd = -1;
+  for (int i = 0; !done; i++) {
+    const char* tableEntry = typeOrderTable[i];
+	if (tableEntry != 0)
+	{
+	  if (strcmp(tableEntry, thisType) == 0)
+	    thisOrd = i;
+	  if (strcmp(tableEntry, argType) == 0)
+	    argOrd = i;
+	  if ((argOrd >= 0) && (thisOrd >= 0))
+	    done = true;
+	}
+	else // table entry == 0
+	  done = true;
+  }
+
+  return thisOrd < argOrd;
+}
+```
+Bằng cách tiếp cận này, chúng ta đã thành công trong việc đóng hàm `DrawAllShapes` trước những thay đổi về thứ tự các hình, trong đó có việc thêm hình mới hoặc thay đổi thứ tự sẵn có (ví dụ vẽ hình vuông trước hình tròn).
+
+Có duy nhất một thành phần không đóng trước những thay đổi về thứ tự là bảng của `Shape`. Bảng này có thể được đặt ở một module riêng của Shape, tách biệt với các module còn lại cho nên thay đổi ở đó không ảnh hưởng đến module khác. Thực tế, với C++, chúng ta có thể lựa chọn bảng nào sẽ sử dụng trong khi thiết lập liên kết.
+
+**Tóm lại**
+
+Theo nhiều cách, OCP là trái tim của thiết kế hướng đối tượng. Thỏa mãn nguyên tắc này là điều tạo nên lợi ích lớn nhất từ kỹ thuật lập trình hướng đối tượng (tính mềm dẻo, tính tái sử dụng được, tính bảo trì,...). Tuy nhiên, thỏa mãn được nguyên lý này không đạt được một cách đơn giản bởi sử dụng ngôn ngữ lập trình hướng đối tượng. Cũng như không nên áp dụng hàng tá lớp trừu tượng cho tất cả các thành phần của ứng dụng. Thay vào đó, nó yêu cầu lập trình viên sử dụng tính trừu tượng cho những phần mà thường xuyên có thay đổi một cách rõ ràng. ***Chống lại sự trừu tượng ở dạng non nớt cũng quan trọng như bản thân sự trừu tượng.***

@@ -126,7 +126,7 @@ Chúng ta có một ứng dụng có thể vẽ hình tròn và hình vuông tr�
 
 Trong C, sử dụng lập trình thủ tục sẽ không thỏa mãn OCP. Chúng ta có thể giải bài toán như đoạn code dưới đây. Ở đây chúng ta định nghĩa một tập các cấu trúc dữ liệu có khởi tạo như nhau nhưng sẽ khác nhau khi chạy chương trình. Thành phần đầu tiên của mỗi cấu trúc sẽ là một mã để phân biệt xem đó là hình vuông hay hình chữ nhật. Hàm DrawAllShapes duyệt một mảng các con trỏ đến cấu trúc dữ liệu này, kiểm tra mã hình sau đó gọi hàm thích hợp (DrawCircle hay DrawSquare).
 
-```C
+```C++
 // -- shape.h --
 enum ShapeType {circle, square};
 
@@ -251,7 +251,7 @@ Bởi tính đóng không thể hoàn thiện được, nó cần được xử 
 
 Thêm vào đó, đáp ứng được OCP rất tốn kém. Nó tiêu tốn nhiều thời gian phát triển và nỗ lực để tạo ra một kiến trúc hợp lý. Tính trừu tượng cũng làm tăng lên độ phức tạp của ứng dụng. Có một lượng giới hạn sự trừu tượng mà lập trình viên có thể đáp ứng được. Rõ ràng, chúng ta cần giới hạn OCP cho một những thay đổi hay xảy ra nhất.
 
-Làm cách nào chúng ta biết được thay đổi nào dễ xảy ra? Chúng ta cần nghiên cứu hợp lý, hỏi câu hỏi hợp lý, và dùng kinh nghiệm của mình cũng như những kiến thức chung. Và cuối cùng, ***chúng ta đợi đến khi thay đổi diễn ra!***
+Làm cách nào chúng ta biết được thay đổi nào dễ xảy ra? Chúng ta cần nghiên cứu hợp lý, hỏi câu hỏi hợp lý, và dùng kinh nghiệm của mình cũng như những kiến thức chung. Và cuối cùng, *chúng ta đợi đến khi thay đổi diễn ra!*
 
 **Cho "lưỡi câu" vào trong**
 
@@ -404,7 +404,7 @@ Có duy nhất một thành phần không đóng trước những thay đổi v�
 Theo nhiều cách, OCP là trái tim của thiết kế hướng đối tượng. Thỏa mãn nguyên tắc này là điều tạo nên lợi ích lớn nhất từ kỹ thuật lập trình hướng đối tượng (tính mềm dẻo, tính tái sử dụng được, tính bảo trì,...). Tuy nhiên, thỏa mãn được nguyên lý này không đạt được một cách đơn giản bởi sử dụng ngôn ngữ lập trình hướng đối tượng. Cũng như không nên áp dụng hàng tá lớp trừu tượng cho tất cả các thành phần của ứng dụng. Thay vào đó, nó yêu cầu lập trình viên sử dụng tính trừu tượng cho những phần mà thường xuyên có thay đổi một cách rõ ràng. *Chống lại sự trừu tượng ở dạng non nớt cũng quan trọng như bản thân sự trừu tượng.*
 
 
-# DIP: The Dependency-Inversion Principle
+# 3. DIP: The Dependency-Inversion Principle
 
 ![markdown](https://github.com/manhnt7/Documentation/blob/main/image/DIP-Image.png)
 
@@ -574,7 +574,7 @@ class Regulate(THERMOMETER& t, HEATER& h,
 
 Lập trình thủ tục truyền thống tạo ra một cấu trúc phụ thuộc trong đó chính sách phụ thuộc vào chi tiết. Điều này thật đáng tiếc vì các chính sách sau đó dễ bị thay đổi chi tiết. Lập trình hướng đối tượng đảo ngược cấu trúc phụ thuộc sao cho cả chi tiết và chính sách đều phụ thuộc vào tính trừu tượng và các service interface. Nguyên tắc đảo ngược phụ thuộc là fundamental low-level cấu tao đằng sau nhiều lợi ích mà công nghệ hướng đối tượng mang lại. Ứng dụng thích hợp của nó là cần thiết để tạo ra các khuôn khổ có thể tái sử dụng. Nó cũng cực kỳ quan trọng đối với việc xây dựng mã có khả năng thay đổi. Vì tất cả các phần trừu tượng và chi tiết đều được tách biệt với nhau nên mã dễ bảo trì hơn nhiều.
 
-# LSP: The Liskov Substitution Principle - Nguyên tắc thay thế Liskov
+# 4. LSP: The Liskov Substitution Principle - Nguyên tắc thay thế Liskov
 
 ![markdown](https://github.com/manhnt7/Documentation/blob/main/image/LSP-image.png)
 
@@ -794,4 +794,4 @@ Một số ngôn ngữ nhất định, như Eiffel, có hỗ trợ trực tiếp
 
 Giao kèo có thể chỉ định ở unit tests. Bằng việc kiểm tra hành vi của class, unit tests làm rõ ràng hành vi của class. Người dùng các hàm, class có thể dựa theo unit tests để xác định xem thay đổi nào là được phép khi làm việc với class đó.
 
-# ISP: The Interface-Segregation Principle
+# 5. ISP: The Interface-Segregation Principle

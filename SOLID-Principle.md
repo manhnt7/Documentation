@@ -492,3 +492,305 @@ Tuy nhiên, giải pháp này cũng đặt ra một hạn chế đối với b�
 Bằng cách đảo ngược hướng của sự phụ thuộc và làm cho `Lamp` làm việc phụ thuộc thay vì bị phụ thuộc, chúng tôi đã làm cho `Lamp` phụ thuộc vào một chi tiết khác — `Button`. 
 
 `Lamp` chắc chắn phụ thuộc vào `ButtonServer`, nhưng `ButtonServer` không phụ thuôc vào `Button`. Bất kỳ loại đối tượng nào biết cách vận dụng `ButtonServer` interface sẽ có thể điều khiển `Button`.
+Trong trường hợp này, không ai sở hữu interface. Chúng tôi có một tình huống thú vị là interface có thể được sử dụng bởi nhiều clients khác nhau và được thực hiện bởi nhiều servers khác nhau.
+
+**Ví dụ về lò nung**
+
+Hãy xem một ví dụ thú vị hơn. Xem xét phần mềm có thể kiểm soát bộ điều chỉnh của lò. Phần mềm có thể đọc nhiệt độ hiện tại từ một kênh IO và hướng dẫn bật hoặc tắt lò bằng cách gửi lệnh đến một kênh IO khác. Cấu trúc của thuật toán có thể trông giống như Listing 11-2.
+Listing 11-2
+Simple algorithm for a thermostat
+
+```C++
+#define TERMOMETER 0x86
+#define FURNACE 0x87
+#define ENGAGE 1
+#define DISENGAGE 0
+void Regulate(double minTemp, double maxTemp)
+{
+ for(;;)
+ {
+ while (in(THERMOMETER) > minTemp)
+ wait(1);
+ out(FURNACE,ENGAGE);
+ 
+ while (in(THERMOMETER) < maxTemp)
+ wait(1);
+ out(FURNACE,DISENGAGE);
+ }
+}
+```
+
+Mục đích của thuật toán là rõ ràng, nhưng mã lộn xộn với nhiều chi tiết cấp thấp. Mã này không bao giờ có thể được sử dụng lại với các phần cứng điều khiển khác nhau.
+Điều này có thể không gây mất mát nhiều vì source code là nhỏ. Nhưng ngay cả như vậy, thật đáng tiếc khi có thuật toán không thể sử dụng lại. Chúng tôi muốn đảo ngược các phần phụ thuộc và xem một cái gì đó giống như Hình 11-5.
+
+![markdown](https://github.com/manhnt7/Documentation/blob/main/image/Figure-11-4.png)
+
+Điều này cho thấy rằng hàm điều chỉnh nhận hai đối số là cả hai interfaces. Giao diện `Thermometer` có thể được đọc, và giao diện `Heater` có thể được kết nối và ngắt kết nối. Đây là tất cả các thuật toán `Regulate` nhu cầu. Bây giờ nó có thể được viết như thể hiện trong Listing 11-3.
+
+Listing 11-3
+Generic Regulator
+```C++
+void Regulate(Thermometer& t, Heater& h,
+ double minTemp, double maxTemp)
+{
+ for(;;)
+ {
+ while (t.Read() > minTemp)
+ wait(1);
+ h.Engage();
+ while (t.Read() < maxTemp)
+ wait(1);
+ h.Disengage();
+ }
+}
+```
+Điều này đã đảo ngược sự phụ thuộc để chính sách quy định cấp cao không phụ thuộc vào bất kỳ chi tiết cụ thể nào của nhiệt kế hoặc lò nung. Thuật toán có thể tái sử dụng.
+
+**Đa hình động v. Tĩnh**
+
+Chúng tôi đã đạt được sự đảo ngược của các phần phụ thuộc và làm cho Quy định chung chung, thông qua việc sử dụng động
+đa hình (abstract class hoặc interfaces). Tuy nhiên, có một cách khác. Chúng tôi có thể đã sử dụng tĩnh dạng đa hình được tạo bởi các mẫu C ++. Xem xét Liệt kê 11-4.
+
+Listing 11-4
+
+```C++
+template <typename THERMOMETER, typename HEATER>
+class Regulate(THERMOMETER& t, HEATER& h,
+ double minTemp, double maxTemp)
+{
+ for(;;)
+ {
+ while (t.Read() > minTemp)
+ wait(1);
+ h.Engage();
+ while (t.Read() < maxTemp)
+ wait(1);
+ h.Disengage();
+ }
+}
+```
+
+**Kết luận**
+
+Lập trình thủ tục truyền thống tạo ra một cấu trúc phụ thuộc trong đó chính sách phụ thuộc vào chi tiết. Điều này thật đáng tiếc vì các chính sách sau đó dễ bị thay đổi chi tiết. Lập trình hướng đối tượng đảo ngược cấu trúc phụ thuộc sao cho cả chi tiết và chính sách đều phụ thuộc vào tính trừu tượng và các service interface. Nguyên tắc đảo ngược phụ thuộc là fundamental low-level cấu tao đằng sau nhiều lợi ích mà công nghệ hướng đối tượng mang lại. Ứng dụng thích hợp của nó là cần thiết để tạo ra các khuôn khổ có thể tái sử dụng. Nó cũng cực kỳ quan trọng đối với việc xây dựng mã có khả năng thay đổi. Vì tất cả các phần trừu tượng và chi tiết đều được tách biệt với nhau nên mã dễ bảo trì hơn nhiều.
+
+# LSP: The Liskov Substitution Principle - Nguyên tắc thay thế Liskov
+
+![markdown](https://github.com/manhnt7/Documentation/blob/main/image/LSP-Image.png)
+
+Nguyên lý của OCP dựa trên hai thành phần chính là trừu tượng (abstraction) và đa hình (polymorphism). Trong các ngôn ngữ lập trình với kiểu dữ liệu tĩnh như C++, Java, một trong những yếu tố hỗ trợ cho trừu tượng và đa hình là thừa kế. Bằng việc sử dụng sự thừa kế, chúng ta có thể tạo ra các class với các phương thức thực hiện dựa theo khai báo phương trức trừu tượng của class cơ sở.
+
+LSP có thể viết ngắn gọn như sau:
+
+`Kiểu con phải có thể thay thế được cho kiểu cơ sở - Subtypes must be substituable for their base types.`
+
+Barbara Liskov lần đầu tiên đưa ra nguyên lý này vào năm 1988. Phát biểu của bà ấy như sau:
+
+Điều chúng ta cần là một mô hình thỏa mãn đặc tính sau đây của sự thay thế:
+Với mỗi object o1 thuộc kiểu S, có một object o2 thuộc kiểu T mà với tất cả các chương trình P được định nghĩa với T, các hành vi của P không thay đổi khi o2 được thay thế bởi o1, và khi đó S là một kiểu con của T.
+
+Tầm quan trọng của nguyên tắc này sẽ rất rõ ràng nếu bạn thấy được hậu quả khi vi phạm nó. Giả sử chúng ta có một hàm f thuộc class cơ sở B. Giả sử chúng ta có một class D được tạo ra dựa vào B mà khi chúng ta gọi hàm f với object của D theo cái cách làm với B, f hoạt động sai. Khi đó, D sẽ vi phạm LSP. Rõ ràng, D trở nên mỏng manh với sự có mặt của f.
+
+Tác giả của f sẽ cố gắng bổ sung một vài chi tiết để có thể kiểm tra với D do đó f có thể hoạt động tốt khi gọi nó từ một object của D. Cách làm này sẽ vi phạm OCP bởi f không hoàn toàn đóng với tất các class được sinh ra từ B. Code trở nên có mùi và nó rõ ràng là kết quả của một lập trình viên thiếu kinh nghiệm (hoặc, tồi tệ hơn, một lập trình viên vội vàng) cố gắng giải quyết mâu thuẫn với LSP.
+
+**Một ví dụ vi phạm LSP**
+
+Việc vi phạm LSP thường là kết quả của việc sử dụng thông tin kiểu của biến trong thời gian chạy (RTTI: Run-Time Type Information). Thông thường, các cú pháp `if, if/else` được sử dụng để xác định kiểu của biến và từ đó hành vi thích hợp được lựa chọn. Xem xét ví dụ 10-1.
+
+```C++
+struct Point {double x,y;};
+
+struct Shape {
+  enum ShapeType {square, circle} itsType;
+  Shape(ShapeType t) : itsType(t) {}
+};
+
+struct Circle : public Shape
+{
+  Circle() : Shape(circle) {};
+  void Draw() const;
+  Point itsCenter;
+  double itsRadius;
+}
+
+struct Square : public Shape
+{
+  Square() : Shape(circle) {};
+  void Draw() const;
+  Point itsTopLeft;
+  double itsSide;
+}
+
+void DrawShape(const Shape& s)
+{
+  if (s.itsType == Shape::square)
+    static_cast<const Square&>(s).Draw();
+  else if (s.itsType == Shape::circle)
+    static_cast<const Circle&>(s).Draw();
+}
+```
+Rõ ràng, hàm `DrawShape` ở trên vi phạm OCP. Nó cần biết tất cả các class con của Shape, và cần thay đổi mỗi khi một class con mới của `Shape` được sinh ra. Nhiều người có thể dễ dàng thấy được cách làm này là ngược hoàn toàn với một thiết kế tốn. Vậy một lập trình viên tốt sẽ viết hàm này như thế nào?
+
+Cùng xem xét cách giải quyết của lập trình viên tên Joe. Sau khi học về lập trình hướng đối tượng, anh ta đi đến kết luận là đa hình quá khó hiểu cho trường hợp này. Do vậy, anh ta định nghĩa class `Shape` mà không có bất cứ hàm ảo nào. Class (hoặc cấu trúc) `Square` và `Circle` sinh ra từ Shape và sẽ có hàm `Draw()`, nhưng chúng không ghi đè lên hàm này. Vì `Circle` và `Square` không thể hoàn toàn thay thế cho `Shape`, hàm `DrawShape` sẽ xác định tham số hình cần vẽ và gọi hàm `Draw` thích hợp.
+
+Vấn đề là, `Square` và `Circle` không thể thay thế được cho Shape và do vậy vi phạm LSP. Qua đó khiến cho hàm `DrawShape` vi phạm OCP. Do đó, có thể thấy rằng Vi phạm LSP là hậu quả của vi phạm OCP.
+
+**`Square` và `Rectangle`, một vi phạm khôn khéo hơn**
+Hiển nhiên, vẫn còn những ví dụ khác khôn khéo hơn rất nhiều ví dụ trên nhưng vẫn vi phạm LSP. Xem xét cách sử dụng class Rectangle mô tả ở ví dụ 10-2.
+
+```C++
+// Rectangle Class
+class Rectangle
+{
+  public:
+    void SetWidth(double w)  {itsWidth = w;}
+    void SetHeight(double h) {itsHeight = h;}
+    double getHeight() const {return itsHeight;}
+    double getWidth() const  {return itsWidth;}
+  private:
+    Point  itsTopLeft;
+    double itsWidth;
+    double itsHeight;
+}
+```
+Thử tưởng tượng ứng dụng của bạn chạy tốt ở nhiều màn hình. Giống như nhiều ứng dụng thành công khác, khách hàng không ngừng đưa ra yêu cầu. Một ngày, khách hàng yêu cầu xử lý hình vuông (squares).
+
+Mọi người thường nói rằng thừa kế là một quan hệ IS-A (là một...). Nói một cách khác, nếu một loại object mới sinh ra mà thỏa mãn quan hệ IS-A với một loại object có sẵn, class của object mới sẽ được sinh ra từ class của object cũ.
+
+Vậy là với logic thông thường, một hình vuông là một hình chữ nhật. Do vậy, một cách logic, class `Square` được sinh ra từ class `Rectangle` (Hình 10-1).
+
+![markdown](https://github.com/manhnt7/Documentation/blob/main/image/Figure-10-1.png)
+
+Ở đây chúng ta sử dụng quán hệ IS-A, đôi khi nó được coi như kiến thức cơ bản của lập trình hướng đối tượng: Một hình vuông là một hình chữ nhật, do vậy class Square cần được sinh ra từ class Rectangle. Tuy nhiên, cách nghĩ này đôi khi dẫn tới những vấn đề nghiêm trọng. Thông thường, chúng ta sẽ không thể nhìn ra vấn đề cho đến khi bắt tay code.
+
+Gợi ý đầu tiên cho chúng ta hiểu được những sai lầm là hình vuông không cần đến cả chiều: dài và chiểu rộng (itsHeight, itsWidth). Dù nó thừa kế từ class Rectangle, lưu giữ thông tin ở hai biến là lãng phí. Trong nhiều trường hợp, việc lãng phí đó không quá nghiêm trọng. Tuy nhiên, nếu chúng ta phải tạo hàng trăm nghìn hình vuông (như chương trình CAD/CED), sự phí phạm này có thể trở nên nghiêm trọng.
+
+Cứ cho rằng tại thời điểm hiện tại, chúng ta không lo lắng về hiệu quả sử dụng bộ nhớ, vẫn còn những vấn đề khác xảy ra do tạo class Square từ Rectangle. Square sẽ thừa kế hàm SetWidth và SetHeight. Hàm này không thích hợp với Square, vì chiều dài và rộng của hình vuông là một. Rõ ràng đây là một vấn đề nghiêm trọng. Tuy nhiên có một cách để giải quyết nó, chúng ta có thể ghi đè hàm SetWidth và SetHeight như sau.
+
+```C++
+void Square::SetWidth(double w)
+{
+  Rectangle::SetWidth(w);
+  Rectangle::SetHeight(w);
+}
+void Square::SetHeight(double h)
+{
+  Rectangle::SetHeight(h);
+  Rectangle::SetWidth(h);
+}
+```
+Đến đây, khi ai đó thay đổi chiều rộng của hình vuông, chiều dài cũng thay đổi ngay lập tức. Và khi ai đó thay đổi chiều dài, chiều rộng cũng sẽ thay đổi theo. Đối tượng hình vuông vẫn duy trì được đặc tính hình học của nó
+
+```C++
+Square s;
+s.SetWidth(1);   // Chiều dài cũng là 1
+s.SetHeight(2);  // Cả chiều dài và rộng là 2
+```
+
+Tuy nhiên, xem xét hàm sau:
+
+```C++
+void f(Rectangle& r)
+{
+  r.SetWidth(32);   // Gọi hàm: Rectangle::SetWidth
+}
+```
+
+Nếu chúng ta truyền tham số là một đối tượng của class Square, đối tượng đó sẽ bị hỏng bởi chiều dài sẽ không thay đổi. Rõ ràng, điều này vi phạm LSP. Hàm f không hoạt động với một class con của Rectangle. Lý do là bởi vì hàm SetWidth, SetHeight không được định nghĩa là hàm ảo virtual trong class Rectangle; do vậy, không có tính đa hình.
+
+Chúng ta có thể sửa chữa một cách đơn giản. Tuy nhiên, việc tạo class con khiến chúng ta cần thay đổi class cơ sở, điều này thường dẫn đến các sai lầm về thiết kế. Cụ thể, nó vi phạm OCP. Chúng ta có thể thấy rằng, việc không định nghĩa hàm ảo virtual SetWidth, SetHeight là một sai lầm thiết kế, và chúng ta cần phải sửa ngay. Tuy nhiên, thật khó để nhận ra điều này ngay từ đầu khi mà SetWidth, SetHeight rõ ràng là những hàm phải có ngay từ đầu. Vì lý do nào chúng ta phải biến nó thành hàm ảo nếu chúng ta không dự báo sự tồn tại của Square.
+
+Giả sử chúng ta chấp nhận thay đổi và sửa các class. Chúng ta sẽ làm như ví dụ 10-3.
+```C++
+class Rectangle
+{
+  public:
+    virtual void SetWidth(double w) {itsWidth = w;}
+    virtual void SetHeight(double h) {itsHeight = h;}
+    double getWidth() const {return itsWidth;}
+    double getHeight() const {return itsHeight;}
+  private:
+    Point itsTopLeft;
+    double itsHeight;
+    double itsWidth;
+}
+
+class Square : public Rectangle
+{
+  public:
+    virtual void SetWidth(double w);
+    virtual void SetHeight(double h);
+}
+
+void Square::SetWidth(double w)
+{
+  Rectangle::SetWidth(w);
+  Rectangle::SetHeight(w);
+}
+
+void Square::SetHeight(double h)
+{
+  Rectangle::SetHeight(h);
+  Rectangle::SetWidth(h);
+}
+```
+
+**Vấn đề thực sự**
+ `Square` và `Rectangle` bắt đầu hoạt động tốt. Bất kỳ điều gì bạn làm với đối tượng `Square`, đặc tính hình học của nó vẫn được duy trì. Tương tự với đối tượng `Rectangle`. Hơn nữa, bạn có thể truyền đối tượng của class `Square` vào những nơi nhận đầu vào là đối tượng của `Rectangle`, và nó vẫn hoạt động tốt.
+
+Do vậy, chúng ta đi đến kết luận rằng thiết kế đã chính xác. Tuy nhiên, kết luận này có thể sai lầm. Một thiết kế nhất quán có thể không đúng với tất cả người dùng. Xem xét hàm g sau đây.
+```C++
+void g(Rectangle &r)
+{
+  r.SetWidth(5);
+  r.SetHeight(4);
+  assert(r.Area() == 20);
+}
+```
+Hàm này gọi đến `SetWidth`, `SetHeight`, các hàm mà nó tin rằng của `Rectangle`. Hàm sẽ hoạt động tốt với hình chữ nhật, nhưng sẽ có lỗi khi làm với hình vuông. Do vậy, vấn đề ở đây là: Tác giả của g tin rằng việc thay đổi chiều rộng của hình chữ nhật không làm ảnh hưởng đến chiều dài.
+
+Rõ ràng, hoàn toàn hợp lý khi giả thiết rằng thay đổi chiều rộng không ảnh hưởng đến chiều dài. Tuy nhiên, không phải tất cả các đối tượng được truyền vào như một hình chữ nhật thỏa mãn điều này. Nếu bạn truyền thực thể của class `Square` với hàm giống như g, nơi mà tác giả đã giả thiết điều trên, chương trình của bạn sẽ bị lỗi. Hàm g trở nên dễ vỡ trong mô hình `Rectangle/Square`.
+
+Hàm `g` cho thấy tốn tại một hàm nhận đầu vào là thực thể của class `Rectangle`, nhưng lại không thể thực hiện được trong trường hợp của `Square`. Do vậy, trong các hàm như thế này, `Square` không thể thay thế được cho `Rectangle`. Quan hệ giữa `Square` và `Rectangle` vi phạm LSP.
+
+Một vài người có thể cho rằng vấn đề nằm ở hàm `g`, trong đó tác giả đã không có quyền coi chiều dài và chiều rộng là độc lập với nhau. Tuy nhiên, tác giả của g có quyền không đồng ý. Hàm `g` nhận đầu vào là thực thể của class `Rectangle`. Có nhiều điều hiển nhiên, không thay đổi khi nói về hình chữ nhật, trong đó có một điều rõ ràng là chiều dài và chiều rộng phải độc lập nhau. Tác giả của g có đầy đủ quyền hành để kiểm tra điều đó. Do vậy, tác giả của `Square` mới là người phạm sai lầm khi vi phạm điều này.
+
+Điều thú vị là tác giả của Square không vi phạm đặc tính của hình vuông. Nhưng bằng việc tạo Square từ Rectangle, anh ta vi phạm đặc tính của hình chữ nhật!
+
+**Giá trị thuộc về bản chất**
+
+LSP đưa chúng ta đến một quyết định quan trọng: *Một mô hình, xét trong một phạm vi cố định, không thể được đánh giá một cách đầy đủ*. Việc đánh giá mô hình chỉ có thể được thực hiện dựa theo cái nhìn của khách hàng. Ví dụ, khi chúng ta xem xét phiên bản cuối cùng của Square và Rectangle trong ví dụ trên, chúng ta có thể thấy chúng đều nhất quán và chính xác. Tuy nhiên, khi chúng ta nhìn nó từ vị trí của một lập trình viên, người đưa ra những giả thiết hợp lý về class cơ sở, mô hình của chúng ta bị phá vỡ.
+
+Khi xem xét một thiết kế là đúng hay không, chúng ta không nên chỉ giới hạn trong một phạm vi nhất định. Chúng ta cần xem xét những giả thiết hợp lý có thể xảy ra bởi người dùng của thiết kế đó.
+
+Ai biết được các giả thiết đó sẽ như thế nào? Hầu hết các giả thiết đó không thể dự đoán trước được. Thay vào đó, nếu chúng ta cố dự đoán tất cả, chúng ta sẽ rơi vào bẫy của "Sự phức tạp không cần thiết - Needless Complexity". Do vậy, cũng như tất cả các nguyên tắc khác, cách tốt nhất là làm thỏa mãn LSP ở mức tối thiểu, lờ đi tất cả những giả thiết có thể cho đến khi bắt đầu có dấu hiệu của một thiết kế dễ vỡ "Fragility".
+
+**ISA liên quan đến hành vi**
+Vậy điều gì đã diễn ra? Tại sao mối quan hệ có vẻ hợp lý giữa hình vuông và hình chữ nhật lại trở nên tồi tệ? Sau cùng, hình vuông có phải là hình chữ nhật? Quan hệ IS-A để làm gì?
+
+Không như những gì tác giả của g suy nghĩ! Một hình vuông là một hình chữ nhật, nhưng từ quan điểm của g, một hình vuông tuyệt đối không là hình chữ nhật. Vì sao? Bởi hành vi của đối tượng hình vuông không thỏa mãn như mong muốn của hàm g về hành vi của hình chữ nhật. Về mặt hành vi, hình vuông không phải là hình chữ nhật, đó là hành vi mà nhà phát triển phần mềm cần nghĩ tới. LSP làm rõ điều đó hơn OCP, rằng quan hệ IS-A bao gồm hành vi mà có thể được yêu cầu một cách hợp lý từ phía khách hàng.
+
+**Thiết kế dựa trên những giao kèo**
+Nhiều lập trình viên có thể không thoải mái, với suy nghĩ về những giả thiết hợp lý. Làm cách nào để bạn biết điều khách hàng thực sự mong muốn? Có một kỹ thuật làm cho điều đó trở nên rõ ràng, từ đó thắt chặt LSP. Kỹ thuật đó được gọi lại thiết kế dựa trên những giao kèo - Design By Contract (DBC) được đưa ra bởi Betrand Meyer.
+
+Sử dụng DBC, tác giả của class đưa ra giao kèo một cách rõ ràng. Giao kèo thông báo đến với tác giả của bất cứ dòng code nào sau này thông tin mà họ có thể tin tưởng được. Giao kèo được định nghĩa bởi điều kiện tiên quyết và điều kiện sau. Điều kiện tiên quyết cần đúng để phương thức có thể hoạt động. Đề hoàn thành, phương thức cần đảm bảo thỏa mãn điều kiện sau.
+
+Chúng ta có thể coi điều kiện sau của hàm `Rectangle::SetWidth(double w)` như sau:
+
+```C++
+assert((itsWidth == w) && (itsHeight == old.itsHeight));
+```
+Trong ví dụ này, old là giá trị của hình chữ nhật trước khi gọi hàm SetWidth. Đến đây, luật về điều kiện tiên quyết và điều kiện sau của các lớp con được Betrand Meyer định nghĩa như sau:
+
+*Một hành vi được định nghĩa lại (ở một class con) chỉ có thể thay thế điều kiện tiên quyết bởi một điều kiện bằng hoặc yếu hơn, và thay thế điều kiện sau bởi một điều kiện bằng hoặc mạnh hơn.*
+
+Nói một cách khác, khi sử dụng đối tượng của một class dựa theo class cơ sở, người dùng chỉ biết về điều kiện tiên quyết và điều kiện sau. Do vậy, đối tượng của class con không được mong chờ người dùng tuân thủ điều kiện tiên quyết mạnh hơn class cơ sở. Chúng phải chấp nhận mọi thứ mà class cơ sở chấp nhận. Đồng thời, class con cần thỏa mãn mọi điều kiện sau của class cơ sở. Có nghĩa là, mọi hành vi và đầu ra của nó không được mâu thuẫn với những ràng buộc được định nghĩa ở lớp cơ sở. Người dùng của class cơ sở không cần phải lo lắng về đầu ra của class con.
+
+Rõ ràng, điều kiện sau của hàm `Square::SetWidth(double w)` yếu hơn điều kiện sau của `Rectangle::SetWidth(double w)` bởi nó không bảo đảm được ràng buộc `(itsHeight == old.itsHeight)`. Do vậy, hàm `SetWidth` của Square vi phạm giao kèo của class cơ sở.
+
+Một số ngôn ngữ nhất định, như Eiffel, có hỗ trợ trực tiếp cho điều kiện tiên quyết và điều kiện sau. Bạn có thể định nghĩa nó và hệ thống sẽ kiểm tra cho bạn khi thực thi chương trình. C++ và Java đều không có tính năng này. Ở các ngôn ngữ này, bạn cần chỉ định điều kiện bằng tay và tự viết cơ chế đảm bảo rằng luật của Meyer không bị vi phạm. Hơn nữa, sẽ thật cần thiết nếu bạn ghi chú lại các điều kiện này trong comment của từng hàm.
+
+**Xác định giao kèo ở Unit Tests**
+Giao kèo có thể chỉ định ở unit tests. Bằng việc kiểm tra hành vi của class, unit tests làm rõ ràng hành vi của class. Người dùng các hàm, class có thể dựa theo unit tests để xác định xem thay đổi nào là được phép khi làm việc với class đó.
+
+#ISP: The Interface-Segregation Principle

@@ -430,4 +430,65 @@ Theo Booch, “... tất cả các kiến trúc hướng đối tượng có c�
 
 Hình 11-2 cho thấy một mô hình thích hợp hơn. Mỗi lớp cấp cao khai báo một giao diện trừu tượng cho các dịch vụ mà nó cần. Các lớp cấp thấp hơn sau đó được hiện thực hóa từ các giao diện trừu tượng này. Mỗi lớp cấp cao hơn sử dụng lớp thấp nhất tiếp theo thông qua giao diện trừu tượng. Như vậy, các lớp cấp cao không phụ thuộc vào các lớp cấp thấp. Thay vào đó, các lớp cấp thấp phụ thuộc vào các giao diện dịch vụ trừu tượng được khai báo ở các lớp cấp cao. 
 
+**Sự đảo ngược quyền sở hữu**
 
+Lưu ý rằng sự đảo ngược ở đây không chỉ là một trong những phần phụ thuộc. Nó cũng là một trong những quyền sở hữu giao diện. Nhưng khi DIP được áp dụng, chúng ta thấy rằng các máy khách có xu hướng sở hữu các abstract interfaces và các máy chủ của họ bắt nguồn từ chúng.
+
+![markdown](https://github.com/manhnt7/Documentation/blob/main/image/Figure-11-2.png)
+
+Điều này đôi khi được gọi là nguyên tắc của Hollywood: "Đừng gọi cho chúng tôi, chúng tôi sẽ gọi cho bạn." Các module cấp thấp thực hiện việc implemmentation interfaces và được gọi bởi các module cấp cao hơn. 
+
+Sử dụng quyền sở hữu "đảo ngược" này, `PolicyLayer` không bị ảnh hưởng bởi bất kỳ thay đổi nào đến `MechanismLayer` hoặc `UtilityLayer`. Hơn thế nữa, có thể sử dụng lại trong bất kỳ ngữ cảnh nào xác định các mô-đun cấp thấp hơn tuân theo `PolicyServiceInterface`. Do đó, bằng cách đảo ngược các phần phụ thuộc. Do đó, bằng cách đảo ngược các yếu tố phụ thuộc, chúng tôi đã tạo ra một cấu trúc, đồng thời linh hoạt hơn, bền hơn và cơ động hơn
+
+**Phụ thuộc vào Abstractions**
+
+Với cách nói khác nhưng cũng khá là đúng về DIP "Phụ thuộc vào abstractions". Nói một cách đơn giản là không nên phụ thuộc vào một class cụ thể, các mối quan hệ trong một chương trình nên kết thúc trên một class abtracts hoặc một interface.
+
+  * Không có biến nào nên giữ một con trỏ hoặc tham chiếu đến một lớp cụ thể.
+  * Không có lớp nào nên bắt nguồn từ một lớp cụ thể.
+  * Không có phương thức nào nên ghi đè một phương thức đã triển khai của bất kỳ lớp cơ sở nào của nó.
+
+Chắc chắn những điều này thường bị vi phạm ít nhất một lần trong mọi chương trình. Ai đó phải tạo các phiên bản của các lớp cụ thể và bất kỳ module nào làm được điều đó sẽ phụ thuộc vào chúng.
+
+**Một ví dụ đơn giản**
+
+Đảo ngược sự phụ thuộc có thể được áp dụng ở bất cứ nơi nào một lớp gửi một message đến lớp khác. Ví dụ, hãy xem xét trường hợp của đối tượng `Button` và đối tượng `Lamp`.
+
+Đối tượng `Button` cảm nhận những thay đổi môi trường bên ngoài. Khi nhận được thông báo từ `Poll` , nó sẽ xác định xem người dùng có "nhấn" nó hay không. Không quan trọng cơ chế cảm biến là gì. Đó có thể là biểu tượng nút trên GUI, nút vật lý được nhấn bằng ngón tay người hoặc thậm chí là thiết bị phát hiện chuyển động trong hệ thống an ninh gia đình. Đối tượng `Button` phát hiện người dùng đã kích hoạt hoặc hủy kích hoạt nó.
+
+Đối tượng Đèn ảnh hưởng đến môi trường bên ngoài. Khi nhận được tin nhắn TurnOn, nó sẽ sáng lên một thứ ánh sáng nào đó. Khi nhận được thông báo TurnOff, nó sẽ tắt ánh sáng đó. Cơ chế vật lý không quan trọng. Đó có thể là đèn LED trên bảng điều khiển máy tính, đèn hơi thủy ngân trong bãi đậu xe, hoặc thậm chí là tia laser trong máy in laser.
+Làm thế nào chúng ta có thể thiết kế một hệ thống sao cho đối tượng Nút điều khiển đối tượng `Lamp`? Hình 11-3 cho thấy một naive. Đối tượng `Button` nhận thông báo `Poll`, xác định xem nút đã được nhấn hay chưa, sau đó chỉ cần gửi thông báo TurnOn hoặc TurnOff tới `Lamp`.
+
+![markdown](https://github.com/manhnt7/Documentation/blob/main/image/Figure-11-3.png)
+
+Tại sao điều này lại ngây thơ? Hãy xem xét đoạn code Java đang mô tả mô hình này (Listing 11-1). Lưu ý rằng lớp `Button` phụ thuộc trực tiếp vào lớp `Lamp`. Sự phụ thuộc này ngụ ý rằng `Button` sẽ bị ảnh hưởng bởi các thay đổi đối với `Lamp`. Hơn nữa, sẽ không thể sử dụng lại `Button` để điều khiển một đối tượng `Motor`. Trong thiết kế này, các đối tượng `Button` điều khiển các đối tượng `Lamp` và chỉ các đối tượng `Lamp`.
+
+Listing 11-1
+Button.java
+```Java
+    public class Button
+    {
+      private Lamp itsLamp;
+      public void poll()
+      {
+        if (/*some condition*/)
+         itsLamp.turnOn();
+      }
+    }
+```
+
+Giải pháp này vi phạm DIP. 
+
+**Tìm kiếm sự trừu tượng cơ bản**
+
+Chính sách cấp cao là gì? đó là abstraction nền của ứng dụng, luôn đảm bảo được sự đúng đắn khi các chi tiết thay đổi. Nó là hệ thống bên trong hệ thống. Trong `Button/Lamp` là một ví dụ, phần trừu tượng cơ bản là phát hiện cử chỉ bật / tắt từ người dùng và chuyển tiếp cử chỉ đó đến đối tượng mục tiêu. Cơ chế nào được sử dụng để phát hiện cử chỉ của người dùng?
+
+Thiết kế trong Hình 11-3 có thể được cải thiện bằng cách đảo ngược sự phụ thuộc vào đối tượng `Lamp`. Trong Hình 11-4, chúng ta thấy rằng `Button` bây giờ giữ một liên kết với một thứ gọi là `ButtonServer`. `ButtonServer` cung cấp các phương thức trừu tượng mà `Button` có thể sử dụng để bật hoặc tắt một cái gì đó. `Lamp` thực hiện implements `ButtonServer` interface. Bây giowfw, `Lamp` thực hiện sự phụ thuộc thay vì bị phụ thuộc.
+
+Thiết kế trong Hình 11-4 cho phép một `Button` điều khiển bất kỳ thiết bị nào sẵn sàng triển khai interface ButtonServer. Điều này mang lại cho chúng tôi rất nhiều tính linh hoạt. Nó cũng có nghĩa là các đối tượng `Button` sẽ có thể điều khiển các đối tượng chưa invented.
+
+Tuy nhiên, giải pháp này cũng đặt ra một hạn chế đối với bất kỳ đối tượng nào cần được điều khiển bằng `Button`. Một đối tượng như vậy phải triển khai giao diện ButtonServer. Điều này thật đáng tiếc vì những đối tượng này cũng có thể muốn được điều khiển bởi một đối tượng `Switch` hoặc một số đối tượng không phải là `Button`.
+
+Bằng cách đảo ngược hướng của sự phụ thuộc và làm cho `Lamp` làm việc phụ thuộc thay vì bị phụ thuộc, chúng tôi đã làm cho `Lamp` phụ thuộc vào một chi tiết khác — `Button`. 
+
+`Lamp` chắc chắn phụ thuộc vào `ButtonServer`, nhưng `ButtonServer` không phụ thuôc vào `Button`. Bất kỳ loại đối tượng nào biết cách vận dụng `ButtonServer` interface sẽ có thể điều khiển `Button`.

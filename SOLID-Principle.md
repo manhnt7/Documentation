@@ -794,4 +794,4 @@ Một số ngôn ngữ nhất định, như Eiffel, có hỗ trợ trực tiếp
 
 Giao kèo có thể chỉ định ở unit tests. Bằng việc kiểm tra hành vi của class, unit tests làm rõ ràng hành vi của class. Người dùng các hàm, class có thể dựa theo unit tests để xác định xem thay đổi nào là được phép khi làm việc với class đó.
 
-#ISP: The Interface-Segregation Principle
+# ISP: The Interface-Segregation Principle

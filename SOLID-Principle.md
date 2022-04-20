@@ -401,4 +401,33 @@ Có duy nhất một thành phần không đóng trước những thay đổi v�
 
 **Tóm lại**
 
-Theo nhiều cách, OCP là trái tim của thiết kế hướng đối tượng. Thỏa mãn nguyên tắc này là điều tạo nên lợi ích lớn nhất từ kỹ thuật lập trình hướng đối tượng (tính mềm dẻo, tính tái sử dụng được, tính bảo trì,...). Tuy nhiên, thỏa mãn được nguyên lý này không đạt được một cách đơn giản bởi sử dụng ngôn ngữ lập trình hướng đối tượng. Cũng như không nên áp dụng hàng tá lớp trừu tượng cho tất cả các thành phần của ứng dụng. Thay vào đó, nó yêu cầu lập trình viên sử dụng tính trừu tượng cho những phần mà thường xuyên có thay đổi một cách rõ ràng. ***Chống lại sự trừu tượng ở dạng non nớt cũng quan trọng như bản thân sự trừu tượng.***
+Theo nhiều cách, OCP là trái tim của thiết kế hướng đối tượng. Thỏa mãn nguyên tắc này là điều tạo nên lợi ích lớn nhất từ kỹ thuật lập trình hướng đối tượng (tính mềm dẻo, tính tái sử dụng được, tính bảo trì,...). Tuy nhiên, thỏa mãn được nguyên lý này không đạt được một cách đơn giản bởi sử dụng ngôn ngữ lập trình hướng đối tượng. Cũng như không nên áp dụng hàng tá lớp trừu tượng cho tất cả các thành phần của ứng dụng. Thay vào đó, nó yêu cầu lập trình viên sử dụng tính trừu tượng cho những phần mà thường xuyên có thay đổi một cách rõ ràng. *Chống lại sự trừu tượng ở dạng non nớt cũng quan trọng như bản thân sự trừu tượng.*
+
+
+# DIP: The Dependency-Inversion Principle
+
+![markdown](https://github.com/manhnt7/Documentation/blob/main/image/DIP-Image.png)
+
+  * Các module cấp cao không nên phụ thuộc vào các modules cấp thấp. Cả 2 nên phụ thuộc vào abstraction. (High-level modules should not depend on low-level modules. Both should depend on abstractions.)
+  * Interface (abstraction) không nên phụ thuộc vào chi tiết, mà chi tiết nên phụ thuộc vào abstraction. (Abstractions should not depend on details. Details should depend on abstractions.)
+
+Trong những năm qua, nhiều người đã đặt câu hỏi tại sao tôi sử dụng từ "inversion" trong tên của nguyên tắc này. Phương pháp phát triển phần mềm truyền thống hơn chẳng hạn như Phân tích và Thiết kế cấu trúc có xu hướng tạo cấu trúc phần mềm trong đó các module cấp cao phụ thuộc vào module cấp thấp.
+Cấu trúc phụ thuộc của một chương trình hướng đối tượng, được thiết kế tốt là "đảo ngược" so với cấu trúc phụ thuộc so với phương pháp truyền thống.
+
+Xem xét việ tác động của các module cấp cao phụ thuộc vào module cấp thấp. Đó là các module cấp cao chứa các quyết định chính sách và mô hình hoạt động quan trọng của một ứng dụng. Mang tính chất quyết định quan trọng trong ứng dụng. Tuy nhiên, khi các module này phụ thuộc vào các module cấp thấp hơn, các thay đổi đối với các module cấp thấp hơn có thể có ảnh hưởng trực tiếp đến các module cấp cao hơn và có thể bắt buộc phải thay đổi chúng.
+
+Tình trạng khó khăn này là vô lý! Đó là các module thiết lập chính sách, cấp cao, lẽ ra phải ảnh hưởng đến các module chi tiết, cấp thấp. Các module chứa các quy tắc nghiệp vụ cấp cao sẽ được ưu tiên hơn và độc lập với các module có chứa các chi tiết triển khai. Các module cấp cao đơn giản là không nên
+phụ thuộc vào các module cấp thấp theo bất kỳ cách nào.
+
+Hơn nữa, đó là các module thiết lập chính sách, cấp cao mà chúng tôi muốn có thể sử dụng lại. Chúng ta đã làm khá tốt trong việc sử dụng lại các module cấp thấp dưới dạng thư viện chương trình con. Khi các module cấp cao phụ thuộc vào các module cấp thấp, sẽ rất khó sử dụng lại các module cấp cao đó trong các ngữ cảnh khác nhau. Tuy nhiên, khi các module cấp cao độc lập với các module cấp thấp, thì các module cấp cao có thể được sử dụng lại khá đơn giản. Nguyên tắc này là trọng tâm của thiết kế framework.
+
+**Phân lớp**
+
+Theo Booch, “... tất cả các kiến trúc hướng đối tượng có cấu trúc tốt đều có các lớp được xác định rõ ràng, với mỗi lớp cung cấp một số dịch vụ nhất quán thông qua một giao diện được xác định và kiểm soát tốt.” Một cách diễn giải ngây thơ về tuyên bố này có thể khiến nhà thiết kế tạo ra một cấu trúc tương tự như Hình 11-1. Một cách hiểu đơn giản trong sơ đồ này, lớp Policy cấp cao sử dụng lớp Mechanism cấp thấp hơn, lớp này lại sử dụng lớp Utility cấp chi tiết. Mặc dù điều này có vẻ phù hợp, nó có đặc điểm khó hiểu mà lớp Policy nhạy cảm với thay đổi hoàn toàn trong lớp Utility. *Sự phụ thuộc có tính bắt cầu*. Lớp Policy phụ thuộc vào một thứ phụ thuộc vào lớp Utility; do đó, lớp Policy chuyển tiếp phụ thuộc vào lớp Uitility.
+Điều này là rất đáng tiếc.
+
+![markdown](https://github.com/manhnt7/Documentation/blob/main/image/Figure-11-1.png)
+
+Hình 11-2 cho thấy một mô hình thích hợp hơn. Mỗi lớp cấp cao khai báo một giao diện trừu tượng cho các dịch vụ mà nó cần. Các lớp cấp thấp hơn sau đó được hiện thực hóa từ các giao diện trừu tượng này. Mỗi lớp cấp cao hơn sử dụng lớp thấp nhất tiếp theo thông qua giao diện trừu tượng. Như vậy, các lớp cấp cao không phụ thuộc vào các lớp cấp thấp. Thay vào đó, các lớp cấp thấp phụ thuộc vào các giao diện dịch vụ trừu tượng được khai báo ở các lớp cấp cao. 
+
+

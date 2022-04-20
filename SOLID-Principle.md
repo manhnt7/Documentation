@@ -576,7 +576,7 @@ Lập trình thủ tục truyền thống tạo ra một cấu trúc phụ thu�
 
 # LSP: The Liskov Substitution Principle - Nguyên tắc thay thế Liskov
 
-![markdown](https://github.com/manhnt7/Documentation/blob/main/image/LSP-Image.png)
+![markdown](https://github.com/manhnt7/Documentation/blob/main/image/LSP-image.png)
 
 Nguyên lý của OCP dựa trên hai thành phần chính là trừu tượng (abstraction) và đa hình (polymorphism). Trong các ngôn ngữ lập trình với kiểu dữ liệu tĩnh như C++, Java, một trong những yếu tố hỗ trợ cho trừu tượng và đa hình là thừa kế. Bằng việc sử dụng sự thừa kế, chúng ta có thể tạo ra các class với các phương thức thực hiện dựa theo khai báo phương trức trừu tượng của class cơ sở.
 
@@ -791,6 +791,7 @@ Rõ ràng, điều kiện sau của hàm `Square::SetWidth(double w)` yếu hơn
 Một số ngôn ngữ nhất định, như Eiffel, có hỗ trợ trực tiếp cho điều kiện tiên quyết và điều kiện sau. Bạn có thể định nghĩa nó và hệ thống sẽ kiểm tra cho bạn khi thực thi chương trình. C++ và Java đều không có tính năng này. Ở các ngôn ngữ này, bạn cần chỉ định điều kiện bằng tay và tự viết cơ chế đảm bảo rằng luật của Meyer không bị vi phạm. Hơn nữa, sẽ thật cần thiết nếu bạn ghi chú lại các điều kiện này trong comment của từng hàm.
 
 **Xác định giao kèo ở Unit Tests**
+
 Giao kèo có thể chỉ định ở unit tests. Bằng việc kiểm tra hành vi của class, unit tests làm rõ ràng hành vi của class. Người dùng các hàm, class có thể dựa theo unit tests để xác định xem thay đổi nào là được phép khi làm việc với class đó.
 
 #ISP: The Interface-Segregation Principle

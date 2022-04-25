@@ -795,3 +795,43 @@ Một số ngôn ngữ nhất định, như Eiffel, có hỗ trợ trực tiếp
 Giao kèo có thể chỉ định ở unit tests. Bằng việc kiểm tra hành vi của class, unit tests làm rõ ràng hành vi của class. Người dùng các hàm, class có thể dựa theo unit tests để xác định xem thay đổi nào là được phép khi làm việc với class đó.
 
 # 5. ISP: The Interface-Segregation Principle
+
+Nguyên tắc này giải quyết các nhược điểm của interfaces "béo". Các lớp có interfaces “béo” là các lớp có interfaces không kết dính. Nói cách khác, các interfaces của lớp có thể được chia thành các nhóm phương thức. Do đó, một số sẽ sử dụng groups các functions này và một số sẽ sử dụng functions khác. 
+
+**Interface Pollution**
+
+Xem xét một hệ thống bảo mật. Trong hệ thống này, có các đối tượng Door có thể được khóa và mở, và biết chúng đang mở hay đóng. (xem ví dụ 12-1)
+
+Listing 12-1
+Security Door
+
+```C++
+class Door
+{
+ public:
+ virtual void Lock() = 0;
+ virtual void Unlock() = 0;
+ virtual bool IsDoorOpen() = 0;
+};
+```
+
+Đây là một abstract class có thể sử dụng các đối tượng phù hợp với `Door` interface, mà không cần phải phụ thuộc vào việc triển khai cụ thể của Door.
+Bây giờ hãy xem xét rằng một implementation như vậy, `TimedDoor`, cần phát ra âm thanh báo động khi cửa mở quá lâu. Để làm điều này, đối tượng `TimedDoor` giao tiếp với một đối tượng khác được gọi là `Timer`.
+
+Listing 12-2
+
+```C++
+class Timer
+{
+ public:
+ void Register(int timeout, TimerClient* client);
+};
+class TimerClient
+{
+ public:
+ virtual void TimeOut() = 0;
+};
+```
+
+Khi một đối tượng muốn được thông báo về thời gian chờ, nó gọi function `Register` của `Timer`. Các đối số của hàm này là thời gian hết giờ. và một con trỏ đến một đối tượng `TimerClient` có hàm `TimeOut` sẽ được gọi khi hết thời gian chờ.
+
